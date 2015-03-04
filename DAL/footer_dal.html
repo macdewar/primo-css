@@ -18,3 +18,76 @@
 
 </div>
 <!--end footer-->
+
+
+<script type="text/javascript">
+// <[![CDATA
+
+// on search results pages, add external links to the facet tile
+// that send the same keyword search to external services.
+
+
+// This should all be set already, earlier in the page.
+// I'm putting it here partly to show what's being used,
+// and partly to just be safe -- to make sure they are defined.
+var novanet = novanet || {};
+if (!novanet.uri){
+  novanet.uri = new URI();
+}
+if (!novanet.params){
+  novanet.params = novanet.uri.search(true);
+}
+
+
+$(function(){
+
+    var wlink, glink, $div, $container = $('#exlidFacetTile'),
+        lang = $('body').hasClass('EXLCurrentLang_fr_FR') ? 'fr' : 'en',
+        query = (novanet.params.query && novanet.params.query.split(',', 3)[2]) || '',
+        freeText = (novanet.params['vl(freeText0)'] || '') + ' ' +
+                   (novanet.params['vl(freeText1)'] || '') + ' ' +
+                   (novanet.params['vl(freeText2)'] || '') + ' ' +
+                   (novanet.params['vl(freeText3)'] || '') + ' ' +
+                   (novanet.params['vl(freeText4)'] || '');
+
+    if ($container.length < 1){
+        //no facet tile on this page
+        return;
+    }
+    
+    freeText = freeText.replace(/\s+/g, ' ').replace(/^\s|\s$/g, '');
+    query = query.replace(/\s+/g, ' ').replace(/^\s|\s$/g, '');
+    query = query || freeText || '';
+
+    if (!query){
+        //no search terms entered
+        return;
+    }
+
+    wlink = 'https://www.worldcat.org/search?q=' + encodeURIComponent(query);
+    glink = 'https://scholar.google.com/scholar?hl=' + lang + '&q=' + encodeURIComponent(query);
+    
+    $div = $('<div>').attr(
+        'id', 'novanet-external-search-links'
+    ).addClass(
+        'EXLFacetList EXLTopLevelFacetList'
+    ).append(
+        $('<div>').addClass(
+            'EXLFacetContainer'
+        ).append(
+            $('<h3>').html("Didn't find what you were looking for?"),
+            $('<ol>').addClass(
+                'EXLFacetsList EXLFacetsListPreview'
+            ).append(
+                $('<li>').addClass('EXLFacet').html('For Books try    <a target="_blank" href="' + wlink +'">WorldCat</a>'),
+                $('<li>').addClass('EXLFacet').html('For Articles try <a target="_blank" href="' + glink +'">Google Scholar</a>')
+            )
+        )
+    );
+    
+    $container.prepend($div);
+
+});  
+
+// ]]>
+</script>
