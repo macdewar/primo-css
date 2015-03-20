@@ -19,6 +19,14 @@
 //If the end user has javascript blocked, those will work as they are (I don't think anything else in Primo will, though.)
 //This script adds extra functionality to the links.
 
+var novanet = novanet || {};
+if (!novanet.uri){
+  novanet.uri = new URI();
+}
+if (!novanet.params){
+  novanet.params = novanet.uri.search(true);
+}
+
 $(document).ready(function(){
   var query = (novanet.params.query && novanet.params.query.split(',',3)[2]) || '',
       t0 = novanet.params['vl(freeText0)'] || '',
@@ -26,8 +34,8 @@ $(document).ready(function(){
       t2 = novanet.params['vl(freeText2)'] || '',
       freeText = t0 + ' ' + t1 + ' ' + t2;
       
-  query = query.replace(/\s+/, ' ').replace(/^\s|\s$/, '');
-  freeText = freeText.replace(/\s+/, ' ').replace(/^\s|\s$/, '');
+  query = query.replace(/\s+/g, ' ').replace(/^\s|\s$/g, '');
+  freeText = freeText.replace(/\s+/g, ' ').replace(/^\s|\s$/g, '');
   query = query || freeText;
   
   if (!query){
@@ -35,6 +43,7 @@ $(document).ready(function(){
     return;
   }
 
+  console.log('query: "' + query + '"');
   //set the rest of the variables we'll need.
   var lang = $('body').hasClass('EXLCurrentLang_fr_FR') ? 'fr' : 'en',
       $wlink = $('#worldcat-link'),
