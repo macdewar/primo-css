@@ -1,0 +1,81 @@
+<div class="EXLFacetContainer">
+  <h3>Didn't find what you were looking for?</h3>
+  <ol class="EXLFacetsList EXLFacetsListPreview">
+    <li class="EXLFacet">
+      <span id="worldcat-label">For Books try</span>
+      <a id="worldcat-link" target="_blank" href="https://www.worldcat.org/search">WorldCat</a>
+    </li>
+    <li class="EXLFacet">
+      <span id="googlescholar-label">For Articles try</span>
+      <a id="googlescholar-link" target="_blank" href="https://scholar.google.com/scholar">Google Scholar</a>
+    </li>
+  </ol>
+</div>
+
+<script type="text/javascript">
+// <[![CDATA
+
+//The links in the static HTML above are just links out to WorldCat and Google.
+//If the end user has javascript blocked, those will work as they are (I don't think anything else in Primo will, though.)
+//This script adds extra functionality to the links.
+
+$(document).ready(function(){
+  var query = (novanet.params.query && novanet.params.query.split(',',3)[2]) || '',
+      t0 = novanet.params['vl(freeText0)'] || '',
+      t1 = novanet.params['vl(freeText1)'] || '',
+      t2 = novanet.params['vl(freeText2)'] || '',
+      freeText = t0 + ' ' + t1 + ' ' + t2;
+      
+  query = query.replace(/\s+/, ' ').replace(/^\s|\s$/, '');
+  freeText = freeText.replace(/\s+/, ' ').replace(/^\s|\s$/, '');
+  query = query || freeText;
+  
+  if (!query){
+    //no search terms supplied.  Don't do anything.
+    return;
+  }
+
+  //set the rest of the variables we'll need.
+  var worldcat_book_filter = '#x0:book-,(x0:book+x4:printbook),(x0:book+x4:mic),(x0:book+x4:thsis),(x0:book+x4:digital),(x0:book+x4:largeprint),(x0:book+x4:continuing),(x0:book+x4:braille)format',
+      worldcat_article_filter = 'results_page#x0:artchap-,(x0:artchap+x4:chptr),(x0:artchap+x4:digital)format',
+      lang = $('body').hasClass('EXLCurrentLang_fr_FR') ? 'fr' : 'en',
+      $wlink = $('#worldcat-link'),
+      wlink = new URI($wlink.attr('href')),
+      $glink = $('#googlescholar-link'),
+      glink = new URI($glink.attr('href'));
+      
+  //modify the local URI object:
+  glink.addQuery('hl', lang);
+  glink.addQuery('q', query);
+
+  //update the DOM node with the new href:
+  $glink.attr('href', glink.toString());
+  
+  //modify the local URI object:
+  if (novanet.current_view == 'DAL'){
+    wlink.hostname('dal.worldcat.org');
+  }
+  if (novanet.params.tab == 'dal_books'){
+    wlink.addQuery('fq', worldcat_book_filter);
+  }
+  if (novanet.params.tab == 'dal_articles'){
+    $('#worldcat-label').html("See more results at");
+    $('#googlescholar-label').html("See more results at");
+    wlink.addQuery('qt', worldcat_article_filter);
+  }  
+
+  if (novanet.params.mode == 'Advanced'){
+    wlink.addQuery('qt', 'advanced');
+    wlink.addQuery('q', 'kf:' + t0 + '+kf:' + t1 + '+kf:' +t2 );
+  }
+  else{
+    wlink.addQuery('q', query);
+  }
+  
+  //update the DOM node with the new href:
+  $wlink.attr('href', wlink.toString());
+  
+});
+
+// ]]>
+</script>
