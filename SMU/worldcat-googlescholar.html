@@ -36,9 +36,7 @@ $(document).ready(function(){
   }
 
   //set the rest of the variables we'll need.
-  var worldcat_book_filter = '#x0:book-,(x0:book+x4:printbook),(x0:book+x4:mic),(x0:book+x4:thsis),(x0:book+x4:digital),(x0:book+x4:largeprint),(x0:book+x4:continuing),(x0:book+x4:braille)format',
-      worldcat_article_filter = 'results_page#x0:artchap-,(x0:artchap+x4:chptr),(x0:artchap+x4:digital)format',
-      lang = $('body').hasClass('EXLCurrentLang_fr_FR') ? 'fr' : 'en',
+  var lang = $('body').hasClass('EXLCurrentLang_fr_FR') ? 'fr' : 'en',
       $wlink = $('#worldcat-link'),
       wlink = new URI($wlink.attr('href')),
       $glink = $('#googlescholar-link'),
@@ -52,25 +50,8 @@ $(document).ready(function(){
   $glink.attr('href', glink.toString());
   
   //modify the local URI object:
-  if (novanet.current_view == 'DAL'){
-    wlink.hostname('dal.worldcat.org');
-  }
-  if (novanet.params.tab == 'dal_books'){
-    wlink.addQuery('fq', worldcat_book_filter);
-  }
-  if (novanet.params.tab == 'dal_articles'){
-    $('#worldcat-label').html("See more results at");
-    $('#googlescholar-label').html("See more results at");
-    wlink.addQuery('qt', worldcat_article_filter);
-  }  
-
-  if (novanet.params.mode == 'Advanced'){
-    wlink.addQuery('qt', 'advanced');
-    wlink.addQuery('q', 'kf:' + t0 + '+kf:' + t1 + '+kf:' +t2 );
-  }
-  else{
-    wlink.addQuery('q', query);
-  }
+  // N.B. There's all kinds of Advanced Search stuff we can do here that is currently omitted.
+  wlink.addQuery('q', query);
   
   //update the DOM node with the new href:
   $wlink.attr('href', wlink.toString());
