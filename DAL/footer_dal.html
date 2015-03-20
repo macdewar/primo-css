@@ -22,72 +22,136 @@
 
 <script type="text/javascript">
 // <[![CDATA
+//***************
+// URLs
+//***************
+var worldcat_link = "http://www.dal.worldcat.org/search?q=";
+var worldcat_book_search = "&fq=#x0:book-,(x0:book+x4:printbook),(x0:book+x4:mic),(x0:book+x4:thsis),(x0:book+x4:digital),(x0:book+x4:largeprint),(x0:book+x4:continuing),(x0:book+x4:braille)format";
+var worldcat_article_search = "&qt=results_page#x0:artchap-,(x0:artchap+x4:chptr),(x0:artchap+x4:digital)format";
+var googlescholar_link = "http://scholar.google.com/scholar?hl=en&q=";
 
-// on search results pages, add external links to the facet tile
-// that send the same keyword search to external services.
+//***************
+// Code
+//***************
+
+// Decode Query String
+(function($) {
+    $.QueryString = (function(a) {
+        if (a == "") return {};
+        var b = {};
+        for (var i = 0; i < a.length; ++i)
+        {
+            var p=a[i].split('=');
+            if (p.length != 2) continue;
+            b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+        }
+        return b;
+    })(window.location.search.substr(1).split('&'))
+})(jQuery);
+
+// Create & Insert Worldcat/Google (WCG) DOM Element
+(function($) {
+	$.CreateWCGElement = (function(wlink,glink) {
+		var wcgElement = $("<div></div>")
+							.attr("id","worldcat-googlescholar-search")
+							.attr("class","EXLFacetList EXLTopLevelFacetList WCHighlight")
+							.append($("<div></div>")
+								.attr("class","EXLFacetContainer")
+								.append("<h3 style=\"background-color:#F2AC00;margin:0;\">Didn't find what you were looking for?</h3>")
+								.append($("<ol></ol>")
+									.attr("id","exlidFacetSublistX")
+									.attr("class","EXLFacetsList EXLFacetsListPreview")
+									.attr("style","border-bottom: thin solid #f2ac00;border-left: thin solid #f2ac00;border-right: thin solid #f2ac00;padding:10px;")
+									.append($("<li></li>")
+										.attr("class","EXLFacet")
+										.append("For Books try <b><a target=\"_new\" href=\""+wlink+"\">Worldcat</a></b>")
+									)
+									.append($("<li></li>")
+										.attr("class","EXLFacet")
+										.append("For Articles try <b><a target=\"_new\" href=\""+glink+"\">Google Scholar</a></b>")
+									)								
+								)
+							)
+		$("#exlidFacetTile").prepend(wcgElement);
+	})
+})(jQuery);
 
 
-// This should all be set already, earlier in the page.
-// I'm putting it here partly to show what's being used,
-// and partly to just be safe -- to make sure they are defined.
-var novanet = novanet || {};
-if (!novanet.uri){
-  novanet.uri = new URI();
+if($.QueryString["mode"] === "Advanced"){
+
+	if($.QueryString["vl%28freeText0%29"]){
+		var searchQuery0 = $.QueryString["vl%28freeText0%29"];
+	}else{
+		var searchQuery0 = $.QueryString["vl(freeText0)"];
+	}
+
+	if($.QueryString["vl%28freeText0%29"]){
+		var searchQuery1 = $.QueryString["vl%28freeText1%29"];
+	}else{
+		var searchQuery1 = $.QueryString["vl(freeText1)"];
+	}
+
+	if($.QueryString["vl%28freeText0%29"]){
+		var searchQuery2 = $.QueryString["vl%28freeText2%29"];
+	}else{
+		var searchQuery2 = $.QueryString["vl(freeText2)"];
+	}
+
+	if (searchQuery0){
+
+		var wlink =  worldcat_link + "kf:" + encodeURIComponent(searchQuery0) + "";
+		var glink = googlescholar_link + encodeURIComponent(searchQuery0) + "";
+
+		if (searchQuery1){
+			wlink += "+kf:" + encodeURIComponent(searchQuery1) + "";
+			glink += " " + encodeURIComponent(searchQuery1) + "";
+		}
+		
+		if (searchQuery2){
+			wlink += "+kf:" + encodeURIComponent(searchQuery2) + "";
+			glink += " " + encodeURIComponent(searchQuery2) + "";
+		}
+
+		switch($.QueryString["tab"]){
+			case "dal_books":
+				wlink += worldcat_book_search;
+				break;
+				
+			case "dal_articles":
+				wlink += worldcat_article_search;
+				break;
+		}
+
+		wlink += "&qt=advanced";
+		
+		$.CreateWCGElement(wlink,glink);
+	}
 }
-if (!novanet.params){
-  novanet.params = novanet.uri.search(true);
+else{
+	if($.QueryString["vl%28freeText0%29"]){
+		var searchQuery0 = $.QueryString["vl%28freeText0%29"];
+	}else{
+		var searchQuery0 = $.QueryString["vl(freeText0)"];
+	}
+	
+	if (searchQuery0){
+
+		var wlink =  worldcat_link + encodeURIComponent(searchQuery0) + "";
+		var glink = googlescholar_link + encodeURIComponent(searchQuery0) + "";
+
+		switch($.QueryString["tab"]){
+			case "dal_books":
+				wlink += worldcat_book_search;
+				break;
+				
+			case "dal_articles":
+				wlink += worldcat_article_search;
+				break;
+		}
+		
+		$.CreateWCGElement(wlink,glink);
+
+	}
 }
-
-
-$(function(){
-
-    var wlink, glink, $div, $container = $('#exlidFacetTile'),
-        lang = $('body').hasClass('EXLCurrentLang_fr_FR') ? 'fr' : 'en',
-        query = (novanet.params.query && novanet.params.query.split(',', 3)[2]) || '',
-        freeText = (novanet.params['vl(freeText0)'] || '') + ' ' +
-                   (novanet.params['vl(freeText1)'] || '') + ' ' +
-                   (novanet.params['vl(freeText2)'] || '') + ' ' +
-                   (novanet.params['vl(freeText3)'] || '') + ' ' +
-                   (novanet.params['vl(freeText4)'] || '');
-
-    if ($container.length < 1){
-        //no facet tile on this page
-        return;
-    }
-    
-    freeText = freeText.replace(/\s+/g, ' ').replace(/^\s|\s$/g, '');
-    query = query.replace(/\s+/g, ' ').replace(/^\s|\s$/g, '');
-    query = query || freeText || '';
-
-    if (!query){
-        //no search terms entered
-        return;
-    }
-
-    wlink = 'https://www.worldcat.org/search?q=' + encodeURIComponent(query);
-    glink = 'https://scholar.google.com/scholar?hl=' + lang + '&q=' + encodeURIComponent(query);
-    
-    $div = $('<div>').attr(
-        'id', 'novanet-external-search-links'
-    ).addClass(
-        'EXLFacetList EXLTopLevelFacetList'
-    ).append(
-        $('<div>').addClass(
-            'EXLFacetContainer'
-        ).append(
-            $('<h3>').html("Didn't find what you were looking for?"),
-            $('<ol>').addClass(
-                'EXLFacetsList EXLFacetsListPreview'
-            ).append(
-                $('<li>').addClass('EXLFacet').html('For Books try    <a target="_blank" href="' + wlink +'">WorldCat</a>'),
-                $('<li>').addClass('EXLFacet').html('For Articles try <a target="_blank" href="' + glink +'">Google Scholar</a>')
-            )
-        )
-    );
-    
-    $container.prepend($div);
-
-});  
-
 // ]]>
 </script>
