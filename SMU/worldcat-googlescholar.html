@@ -3,7 +3,7 @@
   <ol class="EXLFacetsList EXLFacetsListPreview">
     <li class="EXLFacet">
       <span id="worldcat-label">For Books try</span>
-      <a id="worldcat-link" target="_blank" href="https://www.worldcat.org/search">WorldCat</a>
+      <a id="worldcat-link" target="_blank" href="https://smu.on.worldcat.org/search">WorldCat</a>
     </li>
     <li class="EXLFacet">
       <span id="googlescholar-label">For Articles try</span>
@@ -60,7 +60,7 @@ $(document).ready(function(){
   
   //modify the local URI object:
   // N.B. There's all kinds of Advanced Search stuff we can do here that is currently omitted.
-  wlink.addQuery('q', query);
+  wlink.addQuery('queryString', query);
   
   //update the DOM node with the new href:
   $wlink.attr('href', wlink.toString());
