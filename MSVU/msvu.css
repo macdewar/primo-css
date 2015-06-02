@@ -20,6 +20,48 @@
 
 /* ----------------------------------------------- HEADER ----------------------------------------------- */
 
+@media screen and (max-width: 500px){
+  #novanet-sign-in, #novanet-why-sign-in, #header-links {
+    display: none !important;
+  }
+}
+#novanet-sign-in {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 25px;
+  font-size: smaller;
+  font-family: Quicksand, QuicksandBook, Open-Sans, Verdana, Helvetica, Arial, sans-serif;
+  padding: 0.2em;
+  text-align: center;
+  z-index: 1000;
+}
+#novanet-sign-in h1,
+#novanet-sign-in p {
+  margin: 0;
+}
+#novanet-why-sign-in {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 32%;
+  width: 32%;
+  min-width: 20em;
+  background-color: white;
+  border: 1px solid grey;
+  color: grey;
+  font-family: Quicksand, QuicksandBook, Open-Sans, Verdana, Helvetica, Arial, sans-serif;
+  padding: 0.2em;
+  z-index: 1000;
+}
+#novanet-why-sign-in .toggle-why {
+  float: right;
+}
+#novanet-why-sign-in ul {
+  list-style-type: none;
+  margin: 2em;
+  padding: 0;
+}
 /*--- To expand the header image area --- */
 #exlidHeaderTile{padding: 0; width:100%;}
 .EXLSearchWrapper{clear:both;}
